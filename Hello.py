@@ -49,44 +49,43 @@ def fix_image(upload):
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
-    with st.form("image_data_form"):
-        name = st.text_input("Name")
-        price = st.number_input("Price (DKK)", value=75)
-        my_capture = st.camera_input(label="Capture an image")
+    name = st.text_input("Name")
+    price = st.number_input("Price (DKK)", value=75)
+    my_capture = st.camera_input(label="Capture an image")
 
-        col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
+    if my_capture is not None:
+        # Save captured image temporarily to upload
+        captured_image_path = "./captured_image.png"
+        fixed_image, _ = fix_image(upload=my_capture)
+        col1.write("Original Image :camera:")
+        col1.image(my_capture)
+        col2.write("Fixed Image :wrench:")
+        col2.image(fixed_image)
+
+    if st.button("Submit"):
         if my_capture is not None:
             # Save captured image temporarily to upload
             captured_image_path = "./captured_image.png"
-            fixed_image, _ = fix_image(upload=my_capture)
-            col1.write("Original Image :camera:")
-            col1.image(my_capture)
-            col2.write("Fixed Image :wrench:")
-            col2.image(fixed_image)
-
-        if st.form_submit_button("Submit"):
-            if my_capture is not None:
-                # Save captured image temporarily to upload
-                captured_image_path = "./captured_image.png"
-                with open(captured_image_path, "wb") as f:
-                    f.write(my_capture.read())  # Save the uploaded image file to disk
-                _, download_url = fix_image(upload=captured_image_path)
-                if download_url:
-                    # Check if the table exists, if not, create it
-                    con.execute("""
-                        CREATE TABLE IF NOT EXISTS main.wine_data (
-                            name STRING,
-                            price FLOAT,
-                            download_url STRING
-                        )
-                    """)
-                    # Insert data into wine_data table
-                    con.execute(f"INSERT INTO main.wine_data VALUES ('{name}', {price}, '{download_url}')")
-                    st.success("Data submitted successfully!")
-                os.remove(captured_image_path)  # Remove the temporary captured image file
-            else:
-                st.warning("Please capture an image.")
+            with open(captured_image_path, "wb") as f:
+                f.write(my_capture.read())  # Save the uploaded image file to disk
+            _, download_url = fix_image(upload=captured_image_path)
+            if download_url:
+                # Check if the table exists, if not, create it
+                con.execute("""
+                    CREATE TABLE IF NOT EXISTS main.wine_data (
+                        name STRING,
+                        price FLOAT,
+                        download_url STRING
+                    )
+                """)
+                # Insert data into wine_data table
+                con.execute(f"INSERT INTO main.wine_data VALUES ('{name}', {price}, '{download_url}')")
+                st.success("Data submitted successfully!")
+            os.remove(captured_image_path)  # Remove the temporary captured image file
+        else:
+            st.warning("Please capture an image.")
 
 
 # Query for filtered data
