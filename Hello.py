@@ -58,18 +58,18 @@ def fix_image(upload):
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
-    col1, col2 = st.columns(2)
     with st.form("image_data_form"):
         name = st.text_input("Name")
         price = st.number_input("Price (DKK)", value=75)
         my_capture = st.camera_input(label="Capture an image")
+        col1, col2 = st.columns(2)
+        fix_image(upload=my_capture)
         if st.form_submit_button("Submit"):
             if my_capture is not None:
                 # Save captured image temporarily to upload
                 captured_image_path = "./captured_image.png"
                 with open(captured_image_path, "wb") as f:
                     f.write(my_capture.read())  # Save the uploaded image file to disk
-                fix_image(upload=captured_image_path)
                 download_url = fix_image(upload=captured_image_path)
                 if download_url:
                     # Check if the table exists, if not, create it
