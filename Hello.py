@@ -58,11 +58,11 @@ with st.expander("Submit Wine 🍷"):
         col1, col2 = st.columns(2)
 
         if my_capture is not None:
-                # Save captured image temporarily to upload
-                captured_image_path = "./captured_image.png"
-                with open(captured_image_path, "wb") as f:
-                    f.write(my_capture.read())  # Save the uploaded image file to disk
-                fix_image(upload=captured_image_path)
+            # Save captured image temporarily to upload
+            captured_image_path = "./captured_image.png"
+            with open(captured_image_path, "wb") as f:
+                f.write(my_capture.read())  # Save the uploaded image file to disk
+            fix_image(upload=captured_image_path)
 
         if st.form_submit_button("Submit"):
             if my_capture is not None:
