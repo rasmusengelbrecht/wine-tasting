@@ -58,11 +58,11 @@ def fix_image(upload):
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
+    col1, col2 = st.columns(2)
     with st.form("image_data_form"):
         name = st.text_input("Name")
         price = st.number_input("Price (DKK)", value=75)
         my_capture = st.camera_input(label="Capture an image")
-        col1, col2 = st.columns(2)
         if st.form_submit_button("Submit"):
             if my_capture is not None:
                 # Save captured image temporarily to upload
