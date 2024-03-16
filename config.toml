@@ -1,0 +1,5 @@
+[theme]
+base = "dark"
+primaryColor="#66A0FF"
+font="sans serif"
+toolbarMode = "auto"

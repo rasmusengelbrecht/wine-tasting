@@ -8,6 +8,39 @@ import os
 import requests
 import duckdb
 
+
+#-------------------------- Page Config --------------------------------
+
+st.set_page_config(page_title="Wine Tasting", page_icon="🍷")
+
+
+#----------------- Hide Streamlit footer, header -----------------------
+
+hide_streamlit_style = """
+            <style>
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+
+#--------------------------------------------------------------------
+
+
+st.markdown(
+    """
+        # Wine Tasting 🍷
+
+        Start submitting tonights bottles, and let the fun begin 🍾
+    """
+)
+
+
+
+#--------------------------------------------------------------------
+
+
 # Initialize Imgur client
 client_id = st.secrets["client_id"]
 client_secret = st.secrets["client_secret"]
@@ -16,11 +49,11 @@ client = ImgurClient(client_id, client_secret)
 # Connect to DuckDB database
 con = duckdb.connect("md:?motherduck_token=" + st.secrets["motherduck_token"])
 
-st.set_page_config(layout="wide", page_title="Image Background Remover")
 
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
-# Download the fixed image
+#----------------- Functions -----------------------
+
+
 def convert_image(img):
     buf = BytesIO()
     img.save(buf, format="PNG")
@@ -45,6 +78,12 @@ def fix_image(upload):
     
     download_url = upload_to_imgur(fixed_image_path)  # Upload the fixed image to Imgur
     return fixed, download_url
+
+
+
+#--------------------------------------------------------------------
+
+
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
