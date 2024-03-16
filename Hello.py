@@ -3,6 +3,19 @@ from rembg import remove
 from PIL import Image
 from io import BytesIO
 import base64
+import requests
+
+def upload_to_imgur(image):
+    client_id = st.secrets["client_id"]
+    headers = {'Authorization': 'Client-ID ' + client_id}
+    payload = {'image': image}
+    response = requests.post("https://api.imgur.com/3/image", headers=headers, data=payload)
+    data = response.json()
+    if response.status_code == 200:
+        return data['data']['link']
+    else:
+        st.error("Error uploading image to Imgur.")
+        return None
 
 st.set_page_config(layout="wide", page_title="Image Background Remover")
 
@@ -21,7 +34,6 @@ def convert_image(img):
     byte_im = buf.getvalue()
     return byte_im
 
-
 def fix_image(upload):
     image = Image.open(upload)
     col1.write("Original Image :camera:")
@@ -30,12 +42,13 @@ def fix_image(upload):
     fixed = remove(image)
     col2.write("Fixed Image :wrench:")
     col2.image(fixed)
+    
     st.sidebar.markdown("\n")
-    st.sidebar.download_button("Download fixed image", convert_image(fixed), "fixed.png", "image/png")
-
+    download_url = upload_to_imgur(convert_image(fixed))
+    if download_url:
+        st.sidebar.write("Download the fixed image [here](" + download_url + ")")
 
 col1, col2 = st.columns(2)
-# Change file_uploader to camera_input
 my_capture = st.sidebar.camera_input(label="Capture an image")
 
 if my_capture is not None:
