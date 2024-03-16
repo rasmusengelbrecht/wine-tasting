@@ -15,7 +15,7 @@ def upload_to_imgur(image):
         return data['data']['link']
     else:
         st.error("Error uploading image to Imgur.")
-        st.write(response.status_code)
+        st.write(response)
         return None
 
 st.set_page_config(layout="wide", page_title="Image Background Remover")
