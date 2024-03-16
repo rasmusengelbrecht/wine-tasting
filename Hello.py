@@ -59,7 +59,7 @@ with st.expander("Submit Wine 🍷"):
         if my_capture is not None:
             # Save captured image temporarily to upload
             captured_image_path = "./captured_image.png"
-            fixed_image, download_url = fix_image(upload=my_capture)
+            fixed_image, _ = fix_image(upload=my_capture)
             col1.write("Original Image :camera:")
             col1.image(my_capture)
             col2.write("Fixed Image :wrench:")
@@ -87,7 +87,6 @@ with st.expander("Submit Wine 🍷"):
                 os.remove(captured_image_path)  # Remove the temporary captured image file
             else:
                 st.warning("Please capture an image.")
-
 
 
 # Query for filtered data
