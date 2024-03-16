@@ -18,7 +18,6 @@ con = duckdb.connect("md:?motherduck_token=" + st.secrets["motherduck_token"])
 
 st.set_page_config(layout="wide", page_title="Image Background Remover")
 
-
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 # Download the fixed image
@@ -46,17 +45,7 @@ def fix_image(upload):
     
     download_url = upload_to_imgur(fixed_image_path)  # Upload the fixed image to Imgur
     os.remove(fixed_image_path)  # Remove the temporary fixed image
-    return download_url
-
-def show_fixed_image(upload):
-    image = Image.open(upload)
-    col1.write("Original Image :camera:")
-    col1.image(image)
-
-    fixed = remove(image)
-    col2.write("Fixed Image :wrench:")
-    col2.image(fixed)
-
+    return fixed, download_url
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
@@ -70,7 +59,11 @@ with st.expander("Submit Wine 🍷"):
         if my_capture is not None:
             # Save captured image temporarily to upload
             captured_image_path = "./captured_image.png"
-            show_fixed_image(upload=captured_image_path)
+            fixed_image, download_url = fix_image(upload=my_capture)
+            col1.write("Original Image :camera:")
+            col1.image(my_capture)
+            col2.write("Fixed Image :wrench:")
+            col2.image(fixed_image)
 
         if st.form_submit_button("Submit"):
             if my_capture is not None:
@@ -78,7 +71,7 @@ with st.expander("Submit Wine 🍷"):
                 captured_image_path = "./captured_image.png"
                 with open(captured_image_path, "wb") as f:
                     f.write(my_capture.read())  # Save the uploaded image file to disk
-                download_url = fix_image(upload=captured_image_path)
+                _, download_url = fix_image(upload=captured_image_path)
                 if download_url:
                     # Check if the table exists, if not, create it
                     con.execute("""
@@ -94,6 +87,8 @@ with st.expander("Submit Wine 🍷"):
                 os.remove(captured_image_path)  # Remove the temporary captured image file
             else:
                 st.warning("Please capture an image.")
+
+
 
 # Query for filtered data
 query = """
