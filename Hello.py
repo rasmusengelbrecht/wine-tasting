@@ -38,6 +38,18 @@ def upload_to_imgur(image_path):
 
 def fix_image(upload):
     image = Image.open(upload)
+    fixed = remove(image)   
+    
+    # Temporarily save the fixed image to the local filesystem
+    fixed_image_path = "./fixed_image.png"
+    fixed.save(fixed_image_path)
+    
+    download_url = upload_to_imgur(fixed_image_path)  # Upload the fixed image to Imgur
+    os.remove(fixed_image_path)  # Remove the temporary fixed image
+    return download_url
+
+def show_fixed_image(upload):
+    image = Image.open(upload)
     col1.write("Original Image :camera:")
     col1.image(image)
 
@@ -58,9 +70,7 @@ with st.expander("Submit Wine 🍷"):
         if my_capture is not None:
             # Save captured image temporarily to upload
             captured_image_path = "./captured_image.png"
-            with open(captured_image_path, "wb") as f:
-                f.write(my_capture.read())  # Save the uploaded image file to disk
-            fix_image(upload=captured_image_path)
+            show_fixed_image(upload=captured_image_path)
 
         if st.form_submit_button("Submit"):
             if my_capture is not None:
