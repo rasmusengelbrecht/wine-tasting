@@ -56,16 +56,14 @@ with st.expander("Submit Wine 🍷"):
     if my_capture is not None:
         # Save captured image temporarily to upload
         captured_image_path = "./captured_image.png"
-        fixed_image, _ = fix_image(upload=my_capture)
+        with open(captured_image_path, "wb") as f:
+            f.write(my_capture.read())  # Save the uploaded image file to disk
+        fixed_image, _ = fix_image(upload=captured_image_path)
         st.write("Fixed Image :wrench:")
         st.image(fixed_image)
 
     if st.button("Submit"):
         if my_capture is not None:
-            # Save captured image temporarily to upload
-            captured_image_path = "./captured_image.png"
-            with open(captured_image_path, "wb") as f:
-                f.write(my_capture.read())  # Save the uploaded image file to disk
             _, download_url = fix_image(upload=captured_image_path)
             if download_url:
                 # Check if the table exists, if not, create it
@@ -99,6 +97,7 @@ wine_df.rename(columns={'name': 'Name', 'price': 'Price'}, inplace=True)
 
 # Sort the DataFrame by height in descending order and select the top 10 tallest Pokémon
 top_10_tallest = wine_df.nlargest(10, 'Price')
+
 
 st.data_editor(
     top_10_tallest,
