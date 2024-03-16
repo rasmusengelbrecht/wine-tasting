@@ -1,51 +1,44 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import streamlit as st
-from streamlit.logger import get_logger
+from rembg import remove
+from PIL import Image
+from io import BytesIO
+import base64
 
-LOGGER = get_logger(__name__)
+st.set_page_config(layout="wide", page_title="Image Background Remover")
 
+st.write("## Remove background from your image")
+st.write(
+    ":dog: Try capturing an image to watch the background magically removed. Full quality images can be downloaded from the sidebar. This code is open source and available [here](https://github.com/tyler-simons/BackgroundRemoval) on GitHub. Special thanks to the [rembg library](https://github.com/danielgatis/rembg) :grin:"
+)
+st.sidebar.write("## Capture and download :gear:")
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
-    st.write("# Welcome to Streamlit! 👋")
-
-    st.sidebar.success("Select a demo above.")
-
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+# Download the fixed image
+def convert_image(img):
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    byte_im = buf.getvalue()
+    return byte_im
 
 
-if __name__ == "__main__":
-    run()
+def fix_image(upload):
+    image = Image.open(upload)
+    col1.write("Original Image :camera:")
+    col1.image(image)
+
+    fixed = remove(image)
+    col2.write("Fixed Image :wrench:")
+    col2.image(fixed)
+    st.sidebar.markdown("\n")
+    st.sidebar.download_button("Download fixed image", convert_image(fixed), "fixed.png", "image/png")
+
+
+col1, col2 = st.columns(2)
+# Change file_uploader to camera_input
+my_capture = st.sidebar.camera_input(label="Capture an image")
+
+if my_capture is not None:
+    fix_image(upload=my_capture)
+else:
+    fix_image("./zebra.png")  # Placeholder image if no capture is made
