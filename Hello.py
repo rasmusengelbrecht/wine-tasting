@@ -7,6 +7,7 @@ from imgurpython import ImgurClient
 import os
 import requests
 import duckdb
+import altair as alt
 
 
 #-------------------------- Page Config --------------------------------
@@ -133,16 +134,33 @@ wine_df = con.execute(query).df()
 wine_df.rename(columns={'name': 'Name', 'price': 'Price'}, inplace=True)
 
 
-# Sort the DataFrame by height in descending order and select the top 10 tallest Pokémon
-top_10_tallest = wine_df.nlargest(10, 'Price')
+# Sort the DataFrame by price in descending order and select the top 10 most expensive wines
+top_10_expensive = wine_df.nlargest(10, 'Price')
 
 
-st.data_editor(
-    top_10_tallest,
-    column_config={
-        "download_url": st.column_config.ImageColumn(
-            "Preview Image", help="Streamlit app preview screenshots"
-        )
-    },
-    hide_index=True,
+# Create Altair chart for images
+image_chart = alt.Chart(top_10_expensive, height=500).mark_image(
+    width=35,
+    height=35
+).encode(
+    x=alt.X('Name', sort=None),  # Disable sorting to maintain original order
+    y='Price',
+    url='download_url'
 )
+
+# Create Altair chart for bars
+bar_chart = alt.Chart(top_10_expensive, height=500).mark_bar(
+    color='dimgrey'
+).encode(
+    x=alt.X('Name', sort=None),  # Disable sorting to maintain original order
+    y='Price'
+)
+
+# Layer the image chart and bar chart
+combined_chart = alt.layer(bar_chart, image_chart).configure_axis(
+    grid=False
+)
+
+
+# Display the combined chart using Streamlit
+st.altair_chart(combined_chart, use_container_width=True)
