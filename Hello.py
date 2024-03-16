@@ -18,11 +18,6 @@ con = duckdb.connect("md:?motherduck_token=" + st.secrets["motherduck_token"])
 
 st.set_page_config(layout="wide", page_title="Image Background Remover")
 
-st.write("## Remove background from your image")
-st.write(
-    ":dog: Try capturing an image to watch the background magically removed. Full quality images can be downloaded from the sidebar. This code is open source and available [here](https://github.com/tyler-simons/BackgroundRemoval) on GitHub. Special thanks to the [rembg library](https://github.com/danielgatis/rembg) :grin:"
-)
-st.sidebar.write("## Capture and download :gear:")
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
@@ -76,22 +71,8 @@ with st.expander("Submit Wine 🍷"):
                 my_capture.save(captured_image_path)
                 download_url = fix_image(upload=captured_image_path)
                 if download_url:
-                    # Load data into MotherDuck
-                    motherduck_url = "YOUR_MOTHERDUCK_URL"
-                    data_file_path = f"./{name.replace(' ', '_')}.png"
-                    data_file_path_parquet = f"./{name.replace(' ', '_')}.parquet"
-                    # Save the captured image to a file
-                    Image.open(BytesIO(my_capture)).save(data_file_path)
-                    # Convert the image file to Parquet format
-                    con.sql(f"CREATE TABLE {name.replace(' ', '_')} AS SELECT * FROM '{data_file_path}'")
-                    # Upload the Parquet file to MotherDuck
-                    response = requests.post(motherduck_url, files={"data": open(data_file_path_parquet, "rb")})
-                    if response.status_code == 200:
-                        st.success("Data submitted successfully!")
-                    else:
-                        st.error("Error submitting data to MotherDuck.")
-                    # Remove temporary files
-                    os.remove(data_file_path)
-                    os.remove(data_file_path_parquet)
+                    # Insert data into wine_data table
+                    con.sql(f"INSERT INTO wine_data VALUES ('{name}', {price}, '{download_url}')")
+                    st.success("Data submitted successfully!")
             else:
                 st.warning("Please capture an image.")
