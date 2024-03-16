@@ -53,14 +53,12 @@ with st.expander("Submit Wine 🍷"):
     price = st.number_input("Price (DKK)", value=75)
     my_capture = st.camera_input(label="Capture an image")
 
-    col1, col2 = st.columns(2)
-
     if my_capture is not None:
         # Save captured image temporarily to upload
         captured_image_path = "./captured_image.png"
         fixed_image, _ = fix_image(upload=my_capture)
-        col2.write("Fixed Image :wrench:")
-        col2.image(fixed_image)
+        st.write("Fixed Image :wrench:")
+        st.image(fixed_image)
 
     if st.button("Submit"):
         if my_capture is not None:
