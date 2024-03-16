@@ -71,8 +71,16 @@ with st.expander("Submit Wine 🍷"):
                 my_capture.save(captured_image_path)
                 download_url = fix_image(upload=captured_image_path)
                 if download_url:
+                    # Check if the table exists, if not, create it
+                    con.execute("""
+                        CREATE TABLE IF NOT EXISTS main.wine_data (
+                            name STRING,
+                            price FLOAT,
+                            download_url STRING
+                        )
+                    """)
                     # Insert data into wine_data table
-                    con.sql(f"INSERT INTO wine_data VALUES ('{name}', {price}, '{download_url}')")
+                    con.execute(f"INSERT INTO main.wine_data VALUES ('{name}', {price}, '{download_url}')")
                     st.success("Data submitted successfully!")
             else:
                 st.warning("Please capture an image.")
