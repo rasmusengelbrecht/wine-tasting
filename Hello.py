@@ -69,6 +69,7 @@ with st.expander("Submit Wine 🍷"):
                 captured_image_path = "./captured_image.png"
                 with open(captured_image_path, "wb") as f:
                     f.write(my_capture.read())  # Save the uploaded image file to disk
+                fix_image(upload=captured_image_path)
                 download_url = fix_image(upload=captured_image_path)
                 if download_url:
                     # Check if the table exists, if not, create it
