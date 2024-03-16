@@ -44,8 +44,6 @@ def fix_image(upload):
     fixed = remove(image)
     col2.write("Fixed Image :wrench:")
     col2.image(fixed)
-    st.sidebar.markdown("\n")
-    st.sidebar.download_button("Download fixed image", convert_image(fixed), "fixed.png", "image/png")
 
 
 # Form for collecting user inputs
