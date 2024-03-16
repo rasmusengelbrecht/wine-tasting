@@ -68,7 +68,8 @@ with st.expander("Submit Wine 🍷"):
             if my_capture is not None:
                 # Save captured image temporarily to upload
                 captured_image_path = "./captured_image.png"
-                my_capture.save(captured_image_path)
+                with open(captured_image_path, "wb") as f:
+                    f.write(my_capture.read())  # Save the uploaded image file to disk
                 download_url = fix_image(upload=captured_image_path)
                 if download_url:
                     # Check if the table exists, if not, create it
@@ -82,5 +83,6 @@ with st.expander("Submit Wine 🍷"):
                     # Insert data into wine_data table
                     con.execute(f"INSERT INTO main.wine_data VALUES ('{name}', {price}, '{download_url}')")
                     st.success("Data submitted successfully!")
+                os.remove(captured_image_path)  # Remove the temporary captured image file
             else:
                 st.warning("Please capture an image.")
