@@ -99,3 +99,13 @@ wine_df.rename(columns={'name': 'Name', 'price': 'Price'}, inplace=True)
 
 # Sort the DataFrame by height in descending order and select the top 10 tallest Pokémon
 top_10_tallest = wine_df.nlargest(10, 'Price')
+
+st.data_editor(
+    top_10_tallest,
+    column_config={
+        "download_url": st.column_config.ImageColumn(
+            "Preview Image", help="Streamlit app preview screenshots"
+        )
+    },
+    hide_index=True,
+)
