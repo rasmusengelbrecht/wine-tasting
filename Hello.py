@@ -44,7 +44,6 @@ def fix_image(upload):
     fixed.save(fixed_image_path)
     
     download_url = upload_to_imgur(fixed_image_path)  # Upload the fixed image to Imgur
-    os.remove(fixed_image_path)  # Remove the temporary fixed image
     return fixed, download_url
 
 # Form for collecting user inputs
