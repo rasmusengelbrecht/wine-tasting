@@ -3,3 +3,5 @@ numpy
 pandas
 streamlit
 rembg
+imgurpython
+duckdb==0.9.2
