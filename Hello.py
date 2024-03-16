@@ -45,6 +45,7 @@ def fix_image(upload):
     
     st.sidebar.markdown("\n")
     download_url = upload_to_imgur(convert_image(fixed))
+    st.write(download_url)
     if download_url:
         st.sidebar.write("Download the fixed image [here](" + download_url + ")")
 
