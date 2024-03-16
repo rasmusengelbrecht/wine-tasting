@@ -59,8 +59,6 @@ with st.expander("Submit Wine 🍷"):
         # Save captured image temporarily to upload
         captured_image_path = "./captured_image.png"
         fixed_image, _ = fix_image(upload=my_capture)
-        col1.write("Original Image :camera:")
-        col1.image(my_capture)
         col2.write("Fixed Image :wrench:")
         col2.image(fixed_image)
 
