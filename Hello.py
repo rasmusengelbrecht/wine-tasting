@@ -45,7 +45,6 @@ def fix_image(upload):
     col2.write("Fixed Image :wrench:")
     col2.image(fixed)
     
-    st.sidebar.markdown("\n")
     
     # Temporarily save the fixed image to the local filesystem
     fixed_image_path = "./fixed_image.png"
@@ -55,7 +54,7 @@ def fix_image(upload):
     os.remove(fixed_image_path)  # Remove the temporary fixed image
     return download_url
 
-col1, col2 = st.columns(2)
+
 
 # Form for collecting user inputs
 with st.expander("Submit Wine 🍷"):
@@ -66,6 +65,7 @@ with st.expander("Submit Wine 🍷"):
 
         if st.form_submit_button("Submit"):
             if my_capture is not None:
+                col1, col2 = st.columns(2)
                 # Save captured image temporarily to upload
                 captured_image_path = "./captured_image.png"
                 with open(captured_image_path, "wb") as f:
@@ -86,3 +86,19 @@ with st.expander("Submit Wine 🍷"):
                 os.remove(captured_image_path)  # Remove the temporary captured image file
             else:
                 st.warning("Please capture an image.")
+
+# Query for filtered data
+query = """
+SELECT 
+  *
+FROM my_db.main.wine_data
+"""
+wine_df = con.execute(query).df()
+
+
+# Rename the '_name' column to 'Pokemon' and 'height' to 'Height' in the DataFrame
+wine_df.rename(columns={'name': 'Name', 'price': 'Price'}, inplace=True)
+
+
+# Sort the DataFrame by height in descending order and select the top 10 tallest Pokémon
+top_10_tallest = wine_df.nlargest(10, 'Price')
