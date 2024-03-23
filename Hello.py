@@ -168,53 +168,6 @@ with st.expander("Submit Wine 🍷"):
 
 
 
-
-
-#----------------- Rating Form -----------------------
-
-# Query for the wines in wine_data table
-query_wines = """
-SELECT 
-  wine_id,
-  wine_name
-FROM main.wine_data
-"""
-wine_df = con.execute(query_wines).df()
-
-
-with st.expander("Rate Wine 🍷"):
-    wine_name = st.selectbox("Select Wine", options=wine_df["wine_name"].tolist())
-
-    looks_rating = st.slider("Looks Rating (1-10)", min_value=1, max_value=10, step=1)
-    nose_rating = st.slider("Nose Rating (1-10)", min_value=1, max_value=10, step=1)
-    taste_rating = st.slider("Taste Rating (1-10)", min_value=1, max_value=10, step=1)
-
-    if st.button("Submit Rating"):
-        # Insert or update the rating for the wine
-        con.execute("""
-            CREATE TABLE IF NOT EXISTS main.wine_ratings (
-                wine_name STRING PRIMARY KEY,
-                looks_rating INTEGER,
-                nose_rating INTEGER,
-                taste_rating INTEGER
-            )
-        """)
-        con.execute(f"""
-            INSERT INTO main.wine_ratings (wine_name, looks_rating, nose_rating, taste_rating)
-            VALUES ('{wine_name}', {looks_rating}, {nose_rating}, {taste_rating})
-            ON CONFLICT(wine_name) DO UPDATE SET
-            looks_rating = excluded.looks_rating,
-            nose_rating = excluded.nose_rating,
-            taste_rating = excluded.taste_rating
-        """)
-        st.success("Rating submitted successfully!")
-
-
-
-
-
-
-
 # Query for filtered data
 query = """
 SELECT 
