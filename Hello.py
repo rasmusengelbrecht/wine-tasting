@@ -168,16 +168,66 @@ with st.expander("Submit Wine 🍷"):
 
 
 
+#----------------- Rating Form -----------------------
+
+# Query for the wines in wine_data table
+try:
+    query_wines = """
+    SELECT 
+      wine_name
+    FROM my_db.main.wine_data
+    """
+    wine_df = con.execute(query_wines).df()
+except Exception as e:
+    st.error(f"Error querying wines: {str(e)}")
+
+with st.expander("Rate Wine 🍷"):
+    wine_name = st.selectbox("Select Wine", options=wine_df["wine_name"].tolist())
+
+    looks_rating = st.slider("Looks Rating (1-10)", min_value=1, max_value=10, step=1)
+    nose_rating = st.slider("Nose Rating (1-10)", min_value=1, max_value=10, step=1)
+    taste_rating = st.slider("Taste Rating (1-10)", min_value=1, max_value=10, step=1)
+
+    if st.button("Submit Rating"):
+        # Insert or update the rating for the wine
+        try:
+            con.execute("""
+                CREATE TABLE IF NOT EXISTS main.wine_ratings (
+                    wine_name STRING PRIMARY KEY,
+                    looks_rating INTEGER,
+                    nose_rating INTEGER,
+                    taste_rating INTEGER
+                )
+            """)
+            con.execute(f"""
+                INSERT INTO main.wine_ratings (wine_name, looks_rating, nose_rating, taste_rating)
+                VALUES ('{wine_name}', {looks_rating}, {nose_rating}, {taste_rating})
+                ON CONFLICT(wine_name) DO UPDATE SET
+                looks_rating = excluded.looks_rating,
+                nose_rating = excluded.nose_rating,
+                taste_rating = excluded.taste_rating
+            """)
+            st.success("Rating submitted successfully!")
+        except Exception as e:
+            st.error(f"Error submitting rating: {str(e)}")
+
 # Query for filtered data
-query = """
-SELECT 
-  *
-FROM my_db.main.wine_data
-"""
-wine_df = con.execute(query).df()
+try:
+    query = """
+    SELECT 
+      *
+    FROM my_db.main.wine_data
+    """
+    wine_df = con.execute(query).df()
+except Exception as e:
+    st.error(f"Error querying data: {str(e)}")
 
 # Sort the DataFrame by price in descending order and select the top 10 most expensive wines
-top_10_expensive = wine_df.nlargest(10, 'Price')
+try:
+    top_10_expensive = wine_df.nlargest(10, 'price')
+except Exception as e:
+    st.error(f"Error sorting data: {str(e)}")
+
 
 # Create Altair chart for images
 image_chart = alt.Chart(top_10_expensive, height=500).mark_image(
